@@ -126,7 +126,8 @@ export function useGameContract() {
 
     for (const data of datasets) {
       if (data) {
-        const [topPlayers, topScores] = data;
+        // Contract returns [topPlayers, topScores, rewards]
+        const [topPlayers, topScores, rewards] = data;
         const entries: LeaderboardEntry[] = topPlayers
           .map((player, index) => ({
             player,
