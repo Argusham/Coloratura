@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { Circle, Color, GameState } from "@/types/game.types";
 import { COLORS, GAME_CONFIG } from "@/config/game.config";
 
@@ -21,6 +21,11 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
   const spawnRate = useRef(GAME_CONFIG.initialSpawnRate);
   const circleIdCounter = useRef(0);
   const isEndingGame = useRef(false);
+  const frameCountRef = useRef(0);
+  const expectedColorRef = useRef<Color | null>(null);
+  const gameRunningRef = useRef(false);
+  const scoreRef = useRef(0);
+  const levelRef = useRef(1);
 
   const canvasWidth =
     typeof window !== "undefined"
@@ -29,28 +34,52 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
   const canvasHeight = GAME_CONFIG.canvasHeight;
   const circleRadius = GAME_CONFIG.circleRadius;
 
+  // Keep refs in sync with state
+  useEffect(() => {
+    frameCountRef.current = frameCount;
+  }, [frameCount]);
+
+  useEffect(() => {
+    expectedColorRef.current = expectedColor;
+  }, [expectedColor]);
+
+  useEffect(() => {
+    gameRunningRef.current = gameRunning;
+  }, [gameRunning]);
+
+  useEffect(() => {
+    scoreRef.current = score;
+  }, [score]);
+
+  useEffect(() => {
+    levelRef.current = level;
+  }, [level]);
+
   const spawnCircle = useCallback(() => {
-    if (frameCount % spawnRate.current === 0 && circles.length < 1) {
-      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-      const x = Math.random() * (canvasWidth - circleRadius * 2) + circleRadius;
-
-      const newCircle: Circle = {
-        id: circleIdCounter.current++,
-        x,
-        y: -circleRadius,
-        color,
-        radius: circleRadius,
-      };
-
+    if (frameCountRef.current % spawnRate.current === 0) {
       setCircles((prev) => {
+        // Only spawn if there's less than 1 circle
+        if (prev.length >= 1) return prev;
+
+        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        const x = Math.random() * (canvasWidth - circleRadius * 2) + circleRadius;
+
+        const newCircle: Circle = {
+          id: circleIdCounter.current++,
+          x,
+          y: -circleRadius,
+          color,
+          radius: circleRadius,
+        };
+
         const updated = [...prev, newCircle];
-        if (!expectedColor) {
+        if (!expectedColorRef.current) {
           setExpectedColor(newCircle.color);
         }
         return updated;
       });
     }
-  }, [frameCount, expectedColor, canvasWidth, circleRadius, circles.length]);
+  }, [canvasWidth, circleRadius]);
 
   const updateCircles = useCallback(() => {
     setCircles((prev) => {
@@ -60,8 +89,9 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
       }));
 
       let gameEnded = false;
-      const targetCircle = expectedColor
-        ? updated.find((circle) => circle.color === expectedColor)
+      const currentExpectedColor = expectedColorRef.current;
+      const targetCircle = currentExpectedColor
+        ? updated.find((circle) => circle.color === currentExpectedColor)
         : null;
 
       const filtered = updated.filter((circle) => {
@@ -75,8 +105,8 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
       });
 
       if (filtered.length > 0) {
-        const currentTarget = expectedColor
-          ? filtered.find((circle) => circle.color === expectedColor)
+        const currentTarget = currentExpectedColor
+          ? filtered.find((circle) => circle.color === currentExpectedColor)
           : null;
 
         if (!currentTarget) {
@@ -98,18 +128,33 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
 
       return filtered;
     });
-  }, [canvasHeight, expectedColor]);
+  }, [canvasHeight]);
 
-  const handleZoneClick = (color: Color) => {
-    if (!gameRunning || gameState !== "playing") return;
-    if (!expectedColor) return;
+  const handleZoneClick = useCallback((color: Color) => {
+    if (!gameRunningRef.current || gameState !== "playing") return;
+    const currentExpectedColor = expectedColorRef.current;
+    if (!currentExpectedColor) return;
 
-    if (color === expectedColor) {
-      const newScore = score + GAME_CONFIG.pointsPerLevel * level;
-      setScore(newScore);
+    if (color === currentExpectedColor) {
+      setScore((currentScore) => {
+        const currentLevel = levelRef.current;
+        const newScore = currentScore + GAME_CONFIG.pointsPerLevel * currentLevel;
+
+        // Level up check
+        if (newScore > 0 && newScore % GAME_CONFIG.levelUpScore === 0) {
+          setLevel((prev) => prev + 1);
+          fallSpeed.current += GAME_CONFIG.fallSpeedIncrease;
+          spawnRate.current = Math.max(
+            GAME_CONFIG.minSpawnRate,
+            spawnRate.current - GAME_CONFIG.spawnRateDecrease
+          );
+        }
+
+        return newScore;
+      });
 
       setCircles((prev) => {
-        const targetCircle = prev.find((circle) => circle.color === expectedColor);
+        const targetCircle = prev.find((circle) => circle.color === currentExpectedColor);
         if (!targetCircle) return prev;
 
         const filtered = prev.filter((circle) => circle.id !== targetCircle.id);
@@ -125,19 +170,10 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
 
         return filtered;
       });
-
-      if (newScore > 0 && newScore % GAME_CONFIG.levelUpScore === 0) {
-        setLevel((prev) => prev + 1);
-        fallSpeed.current += GAME_CONFIG.fallSpeedIncrease;
-        spawnRate.current = Math.max(
-          GAME_CONFIG.minSpawnRate,
-          spawnRate.current - GAME_CONFIG.spawnRateDecrease
-        );
-      }
     } else {
       endGame();
     }
-  };
+  }, [gameState]);
 
   const startGamePlay = () => {
     setScore(0);
@@ -153,15 +189,15 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
     setGameRunning(true);
   };
 
-  const endGame = () => {
-    if (isEndingGame.current || !gameRunning) return;
+  const endGame = useCallback(() => {
+    if (isEndingGame.current || !gameRunningRef.current) return;
 
     isEndingGame.current = true;
     setGameRunning(false);
     setGameState("gameOver");
 
-    onGameEnd(score, level);
-  };
+    onGameEnd(scoreRef.current, levelRef.current);
+  }, [onGameEnd]);
 
   const goToWelcome = () => {
     setGameState("welcome");
@@ -172,9 +208,9 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
     setGameState("leaderboard");
   };
 
-  const incrementFrameCount = () => {
+  const incrementFrameCount = useCallback(() => {
     setFrameCount((prev) => prev + 1);
-  };
+  }, []);
 
   return {
     gameState,
