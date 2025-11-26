@@ -12,6 +12,7 @@ import { ClaimRewardsPopup } from "@/components/ClaimRewardsPopup";
 
 export default function ColorMatchGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gameLoopRef = useRef<number>();
 
   const {
     address,
@@ -57,6 +58,18 @@ export default function ColorMatchGame() {
     circleRadius,
   });
 
+  // Use refs to track latest state without triggering effect re-runs
+  const circlesRef = useRef(circles);
+  const expectedColorRef = useRef(expectedColor);
+
+  useEffect(() => {
+    circlesRef.current = circles;
+  }, [circles]);
+
+  useEffect(() => {
+    expectedColorRef.current = expectedColor;
+  }, [expectedColor]);
+
   // Start gameplay when contract transaction succeeds
   useEffect(() => {
     if (isStartGameSuccess) {
@@ -64,35 +77,33 @@ export default function ColorMatchGame() {
     }
   }, [isStartGameSuccess]);
 
-  // Game loop effect
+  // Game loop effect - only depends on game state, not on circles/colors
   useEffect(() => {
-    let animationId: number;
-
     const gameLoop = () => {
-      if (!gameRunning || gameState !== "playing") return;
+      if (!gameRunning || gameState !== "playing") {
+        return;
+      }
 
       incrementFrameCount();
       spawnCircle();
       updateCircles();
-      drawCircles(canvasRef.current, circles, expectedColor);
+      drawCircles(canvasRef.current, circlesRef.current, expectedColorRef.current);
 
-      animationId = requestAnimationFrame(gameLoop);
+      gameLoopRef.current = requestAnimationFrame(gameLoop);
     };
 
     if (gameRunning && gameState === "playing") {
-      animationId = requestAnimationFrame(gameLoop);
+      gameLoopRef.current = requestAnimationFrame(gameLoop);
     }
 
     return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
       }
     };
   }, [
     gameRunning,
     gameState,
-    circles,
-    expectedColor,
     spawnCircle,
     updateCircles,
     drawCircles,
