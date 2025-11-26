@@ -40,7 +40,7 @@ export function GameOverScreen({
             <div className="text-7xl sm:text-8xl mb-4 animate-bounce-slow">
               {score > 1000 ? "🎉" : score > 500 ? "✨" : "🎮"}
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#F47575] via-[#FFB8F4] to-[#A5B3FF] mb-3 animate-gradient">
+            <h2 className="text-3xl sm:text-4xl font-black bg-clip-text bg-gradient-to-r from-[#F47575] via-[#FFB8F4] to-[#A5B3FF] mb-3 animate-gradient">
               Game Over!
             </h2>
             <p className="text-gray-900 text-sm sm:text-base font-semibold opacity-70">
@@ -55,7 +55,7 @@ export function GameOverScreen({
               <p className="text-gray-900 text-sm sm:text-base font-semibold opacity-70 mb-2 text-center">
                 Final Score
               </p>
-              <p className="text-5xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#00B17A] to-[#7DCAF6] mb-4 text-center animate-pulse-glow">
+              <p className="text-5xl sm:text-6xl font-black bg-clip-text bg-gradient-to-r from-[#00B17A] to-[#7DCAF6] mb-4 text-center animate-pulse-glow">
                 {score}
               </p>
               <div className="flex items-center justify-center gap-4">

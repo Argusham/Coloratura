@@ -23,7 +23,7 @@ export function LeaderboardScreen({
 
       <div className="w-full max-w-md relative z-10">
         <div className="glass-card rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl">
-          <h2 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-multi mb-4 sm:mb-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-black bg-clip-text bg-gradient-multi mb-4 sm:mb-6 text-center">
             🏆 Leaderboard
           </h2>
 
@@ -90,7 +90,7 @@ export function LeaderboardScreen({
             onClick={onGoToWelcome}
             className="w-full bg-gradient-to-r from-[#7DCAF6] to-[#5AB5E8] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold text-base sm:text-lg hover:from-[#5AB5E8] hover:to-[#7DCAF6] transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg border-2 border-white/30"
           >
-            ← Back to Menu
+           Back to Game
           </button>
         </div>
       </div>

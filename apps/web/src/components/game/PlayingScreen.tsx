@@ -50,7 +50,7 @@ export function PlayingScreen({
               >
                 <span className="text-gray-900 text-xl sm:text-2xl font-bold">←</span>
               </button>
-              <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-multi">
+              <h1 className="text-xl sm:text-2xl font-black bg-clip-text bg-gradient-multi">
                 Colour Match
               </h1>
               <div className="w-10 sm:w-12"></div>

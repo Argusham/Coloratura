@@ -24,10 +24,10 @@ export function WelcomeScreen({
     <div className="min-h-[calc(100vh-4rem)] relative flex items-center justify-center p-3 sm:p-4 overflow-hidden bg-gray-50">
       {/* Animated background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-gradient-to-br from-[#F47575] to-[#FF6B6B] opacity-20 blur-3xl animate-float" />
-        <div className="absolute top-20 right-10 w-40 h-40 rounded-full bg-gradient-to-br from-[#00B17A] to-[#009962] opacity-20 blur-3xl animate-float-delayed" />
-        <div className="absolute bottom-20 left-1/4 w-36 h-36 rounded-full bg-gradient-to-br from-[#7DCAF6] to-[#5AB5E8] opacity-20 blur-3xl animate-float" />
-        <div className="absolute bottom-10 right-1/4 w-32 h-32 rounded-full bg-gradient-to-br from-[#FFDA57] to-[#FFE57F] opacity-20 blur-3xl animate-float-delayed" />
+        <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-gradient-to-br from-[#F47575] to-[#FF6B6B] opacity-40 blur-sm animate-float" />
+        <div className="absolute top-20 right-10 w-40 h-40 rounded-full bg-gradient-to-br from-[#00B17A] to-[#009962] opacity-60 blur-sm animate-float-delayed" />
+        <div className="absolute bottom-20 left-1/4 w-36 h-36 rounded-full bg-gradient-to-br from-[#FFDA57] to-[#FFE57F] opacity-40 blur-sm animate-float" />
+        <div className="absolute bottom-10 right-1/4 w-32 h-32 rounded-full bg-gradient-to-br from-[#7DCAF6] to-[#5AB5E8] opacity-60 blur-sm animate-float-delayed" />
       </div>
 
       <div className="w-full max-w-md relative z-10">
@@ -39,7 +39,7 @@ export function WelcomeScreen({
             Match falling colored circles by tapping the correct zones!
           </p>
 
-          {isConnected ? (
+          {/* {isConnected ? (
             <div className="mb-4 sm:mb-6">
               <p className="text-xs font-mono glass p-2 rounded-xl text-gray-800 border border-white/30">
                 Connected: {address ? `${address.slice(0, 5)}...${address.slice(-3)}` : ""}
@@ -55,7 +55,7 @@ export function WelcomeScreen({
             <p className="text-[#FF6B6B] mb-4 sm:mb-6 text-sm sm:text-base font-semibold">
               Please connect your wallet to play
             </p>
-          )}
+          )} */}
 
           <div className="mb-4 glass border border-white/30 rounded-xl p-3 sm:p-4">
             <p className="text-[#CC9A00] text-xs sm:text-sm font-bold">
