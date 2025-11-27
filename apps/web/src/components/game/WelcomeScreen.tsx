@@ -57,10 +57,17 @@ export function WelcomeScreen({
             </p>
           )} */}
 
-          <div className="mb-4 glass border border-white/30 rounded-xl p-3 sm:p-4">
-            <p className="text-[#CC9A00] text-xs sm:text-sm font-bold">
-              Game Cost: 0.1 cUSD
-            </p>
+          <div className="mb-4 space-y-2">
+            <div className="glass border border-white/30 rounded-xl p-3 sm:p-4">
+              <p className="text-[#CC9A00] text-xs sm:text-sm font-bold">
+                Game Cost: 0.1 cUSD
+              </p>
+            </div>
+            <div className="glass border border-[#00B17A]/30 rounded-xl p-3 sm:p-4 bg-[#00B17A]/5">
+              <p className="text-[#00B17A] text-xs sm:text-sm font-bold text-center">
+                Need 3+ players daily to earn rewards. Invite friends!
+              </p>
+            </div>
           </div>
 
           <div className="space-y-3 sm:space-y-4">

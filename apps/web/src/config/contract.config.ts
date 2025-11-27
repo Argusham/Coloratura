@@ -162,6 +162,13 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [{ internalType: "uint256[]", name: "dayIds", type: "uint256[]" }],
+    name: "claimMultipleDays",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getPaymentToken",
     outputs: [{ internalType: "address", name: "", type: "address" }],

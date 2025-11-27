@@ -41,6 +41,13 @@ export default function Home() {
             </Button>
           </div>
 
+          {/* Reward Info Card */}
+          <div className="glass-card rounded-3xl sm:rounded-[2.5rem] shadow-2xl p-4 sm:p-6 mb-3 sm:mb-4 bg-gradient-to-br from-[#00B17A]/10 to-[#009962]/10 border-2 border-[#00B17A]/30">
+            <p className="text-[#00B17A] text-sm sm:text-base font-bold text-center">
+              Daily rewards require 3+ players! Invite your friends to compete and win together!
+            </p>
+          </div>
+
           {/* Game Info Card */}
           <div className="glass-card rounded-3xl sm:rounded-[2.5rem] shadow-2xl p-4 sm:p-6 mb-3 sm:mb-4">
             <h2 className="text-lg sm:text-xl font-black text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
