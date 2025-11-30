@@ -4,11 +4,16 @@ import { useRef, useEffect } from "react";
 import { useGameContract } from "@/hooks/useGameContract";
 import { useGameLogic } from "@/hooks/useGameLogic";
 import { useCanvasRenderer } from "@/hooks/useCanvasRenderer";
+import { useDailyTop3, useDailySummaries, usePlayerStats } from "@/hooks/useContractLeaderboard";
+import { useClaimRewards } from "@/hooks/useClaimRewards";
 import { WelcomeScreen } from "@/components/game/WelcomeScreen";
 import { PlayingScreen } from "@/components/game/PlayingScreen";
 import { GameOverScreen } from "@/components/game/GameOverScreen";
 import { LeaderboardScreen } from "@/components/game/LeaderboardScreen";
+import { ClaimScreen } from "@/components/game/ClaimScreen";
 import { ClaimRewardsPopup } from "@/components/ClaimRewardsPopup";
+import { useReadContract } from "wagmi";
+import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/config/contract.config";
 
 export default function ColorMatchGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,11 +28,32 @@ export default function ColorMatchGame() {
     isSubmittingScore,
     isSubmitScoreLoading,
     isSubmitScoreSuccess,
-    leaderboard,
     playerStats,
     startGame,
     submitScore,
   } = useGameContract();
+
+  // Read current day from contract
+  const { data: currentDay } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: "currentDay",
+  });
+
+  // Calculate previous day
+  const previousDay = currentDay && currentDay > 0n ? currentDay - 1n : undefined;
+
+  // Get previous day's top 3 from contract (finalized winners)
+  const { data: previousDayTop3, isLoading: isPreviousDayLoading } = useDailyTop3(previousDay);
+
+  // Get today's live scores from dailySummaries
+  const { topScores: todayScores, isLoading: isTodayScoresLoading } = useDailySummaries(currentDay);
+
+  // Get claimable rewards
+  const { claimableRewards } = useClaimRewards();
+
+  // Get player stats
+  const { data: playerStatsData } = usePlayerStats(address);
 
   const {
     gameState,
@@ -45,6 +71,7 @@ export default function ColorMatchGame() {
     startGamePlay,
     goToWelcome,
     showLeaderboard,
+    showClaimPage,
     incrementFrameCount,
   } = useGameLogic({
     onGameEnd: (finalScore, finalLevel) => {
@@ -118,10 +145,12 @@ export default function ColorMatchGame() {
           isConnected={isConnected}
           address={address}
           playerStats={playerStats}
+          playerStatsData={playerStatsData}
           isStartingGame={isStartingGame}
           isStartGameLoading={isStartGameLoading}
           onStartGame={startGame}
           onShowLeaderboard={showLeaderboard}
+          onShowClaimPage={showClaimPage}
         />
       </>
     );
@@ -132,8 +161,24 @@ export default function ColorMatchGame() {
       <>
         <ClaimRewardsPopup />
         <LeaderboardScreen
-          leaderboard={leaderboard}
+          previousDayTop3={previousDayTop3 || []}
+          todayScores={todayScores || []}
           address={address}
+          onGoToWelcome={goToWelcome}
+          isLoading={isPreviousDayLoading || isTodayScoresLoading}
+          claimableDays={claimableRewards.map(r => r.day)}
+        />
+      </>
+    );
+  }
+
+  if (gameState === "claim") {
+    return (
+      <>
+        <ClaimRewardsPopup />
+        <ClaimScreen
+          address={address}
+          currentDay={currentDay}
           onGoToWelcome={goToWelcome}
         />
       </>

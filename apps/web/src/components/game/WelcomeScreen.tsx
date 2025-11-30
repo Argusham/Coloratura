@@ -1,24 +1,28 @@
 import { ENTRY_FEE } from "@/config/contract.config";
-import type { PlayerStats } from "@/types/game.types";
+import type { PlayerStats as PlayerStatsData } from "@/hooks/useContractLeaderboard";
 
 interface WelcomeScreenProps {
   isConnected: boolean;
   address: string | undefined;
   playerStats: readonly [bigint, bigint, bigint, bigint] | undefined;
+  playerStatsData: PlayerStatsData | undefined;
   isStartingGame: boolean;
   isStartGameLoading: boolean;
   onStartGame: () => void;
   onShowLeaderboard: () => void;
+  onShowClaimPage: () => void;
 }
 
 export function WelcomeScreen({
   isConnected,
   address,
   playerStats,
+  playerStatsData,
   isStartingGame,
   isStartGameLoading,
   onStartGame,
   onShowLeaderboard,
+  onShowClaimPage,
 }: WelcomeScreenProps) {
   return (
     <div className="min-h-[calc(100vh-4rem)] relative flex items-center justify-center p-3 sm:p-4 overflow-hidden bg-gray-50">
@@ -72,6 +76,7 @@ export function WelcomeScreen({
 
           <div className="space-y-3 sm:space-y-4">
             <button
+              type="button"
               onClick={onStartGame}
               disabled={!isConnected || isStartingGame || isStartGameLoading}
               className="w-full bg-gradient-to-r from-[#00B17A] to-[#009962] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold text-base sm:text-lg hover:from-[#009962] hover:to-[#00B17A] transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg border-2 border-white/30"
@@ -79,12 +84,51 @@ export function WelcomeScreen({
               {isStartingGame || isStartGameLoading ? "Starting..." : "🚀 Start Game"}
             </button>
 
-            <button
-              onClick={onShowLeaderboard}
-              className="w-full bg-gradient-to-r from-[#7DCAF6] to-[#5AB5E8] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold text-base sm:text-lg hover:from-[#5AB5E8] hover:to-[#7DCAF6] transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg border-2 border-white/30"
-            >
-              🏆 Leaderboard
-            </button>
+            {/* Player Stats Display */}
+            {isConnected && playerStatsData && (
+              <div className="glass border border-white/30 rounded-xl p-4 space-y-2">
+                <h3 className="text-sm font-bold text-gray-800 text-center mb-3">
+                  Your Stats
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center">
+                    <p className="text-xs text-gray-600 font-medium">Games Played</p>
+                    <p className="text-lg font-bold text-[#00B17A]">
+                      {playerStatsData.gamesPlayed.toString()}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-gray-600 font-medium">High Score</p>
+                    <p className="text-lg font-bold text-[#7DCAF6]">
+                      {playerStatsData.highScore.toString()}
+                    </p>
+                  </div>
+                  <div className="text-center col-span-2">
+                    <p className="text-xs text-gray-600 font-medium">Total Earnings</p>
+                    <p className="text-xl font-bold text-[#FFDA57]">
+                      {playerStatsData.totalEarningsFormatted} cUSD
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={onShowClaimPage}
+                className="bg-gradient-to-r from-[#FFDA57] to-[#FFE57F] text-[#100F06] px-4 sm:px-6 py-3 sm:py-4 rounded-2xl font-bold text-sm sm:text-base hover:from-[#FFE57F] hover:to-[#FFDA57] transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg border-2 border-white/30"
+              >
+                💰 Claim
+              </button>
+              <button
+                type="button"
+                onClick={onShowLeaderboard}
+                className="bg-gradient-to-r from-[#7DCAF6] to-[#5AB5E8] text-white px-4 sm:px-6 py-3 sm:py-4 rounded-2xl font-bold text-sm sm:text-base hover:from-[#5AB5E8] hover:to-[#7DCAF6] transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg border-2 border-white/30"
+              >
+                🏆 Board
+              </button>
+            </div>
           </div>
         </div>
       </div>

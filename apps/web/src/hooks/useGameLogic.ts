@@ -208,6 +208,10 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
     setGameState("leaderboard");
   };
 
+  const showClaimPage = () => {
+    setGameState("claim");
+  };
+
   const incrementFrameCount = useCallback(() => {
     setFrameCount((prev) => prev + 1);
   }, []);
@@ -229,6 +233,7 @@ export function useGameLogic({ onGameEnd }: UseGameLogicProps) {
     endGame,
     goToWelcome,
     showLeaderboard,
+    showClaimPage,
     incrementFrameCount,
   };
 }

@@ -1,5 +1,5 @@
 export type Color = "red" | "blue" | "green" | "yellow";
-export type GameState = "welcome" | "playing" | "gameOver" | "leaderboard";
+export type GameState = "welcome" | "playing" | "gameOver" | "leaderboard" | "claim";
 
 export interface LeaderboardEntry {
   player: string;

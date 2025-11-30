@@ -176,6 +176,59 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [{ internalType: "uint256", name: "day", type: "uint256" }],
+    name: "dailySummaries",
+    outputs: [
+      {
+        components: [
+          { internalType: "address", name: "player", type: "address" },
+          { internalType: "uint32", name: "score", type: "uint32" },
+          { internalType: "uint16", name: "level", type: "uint16" },
+        ],
+        internalType: "struct ColorMatchGame.ScoreEntry",
+        name: "first",
+        type: "tuple",
+      },
+      {
+        components: [
+          { internalType: "address", name: "player", type: "address" },
+          { internalType: "uint32", name: "score", type: "uint32" },
+          { internalType: "uint16", name: "level", type: "uint16" },
+        ],
+        internalType: "struct ColorMatchGame.ScoreEntry",
+        name: "second",
+        type: "tuple",
+      },
+      {
+        components: [
+          { internalType: "address", name: "player", type: "address" },
+          { internalType: "uint32", name: "score", type: "uint32" },
+          { internalType: "uint16", name: "level", type: "uint16" },
+        ],
+        internalType: "struct ColorMatchGame.ScoreEntry",
+        name: "third",
+        type: "tuple",
+      },
+      { internalType: "uint128", name: "totalCollected", type: "uint128" },
+      { internalType: "uint16", name: "totalPlayers", type: "uint16" },
+      { internalType: "bool", name: "finalized", type: "bool" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "player", type: "address" }],
+    name: "players",
+    outputs: [
+      { internalType: "uint64", name: "gamesPlayed", type: "uint64" },
+      { internalType: "uint64", name: "lastPlayTime", type: "uint64" },
+      { internalType: "uint64", name: "highScore", type: "uint64" },
+      { internalType: "uint128", name: "totalEarnings", type: "uint128" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     anonymous: false,
     inputs: [
       {
