@@ -229,6 +229,13 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "finalizeCurrentDay",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     anonymous: false,
     inputs: [
       {

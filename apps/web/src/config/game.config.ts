@@ -20,7 +20,7 @@ export const GAME_CONFIG = {
   canvasWidth: 350,
   canvasHeight: 400,
   circleRadius: 25,
-  initialFallSpeed: 2,
+  initialFallSpeed: 3,
   initialSpawnRate: 120,
   fallSpeedIncrease: 0.5,
   spawnRateDecrease: 10,
