@@ -41,12 +41,12 @@ export function ClaimRewardsPopup() {
 
   return (
     <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-md">
-      <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-2xl p-6 border-4 border-yellow-300 animate-bounce-slow">
-        <div className="text-center mb-4">
-          <h2 className="text-2xl font-bold text-white mb-2 flex items-center justify-center gap-2">
+      <div className="card-brutal bg-brutal-yellow p-5 sm:p-6 animate-wiggle">
+        <div className="text-center mb-5">
+          <h2 className="text-2xl sm:text-3xl font-black text-brutal-black mb-2 flex items-center justify-center gap-2 uppercase tracking-tight">
             🎉 You Won! 🎉
           </h2>
-          <p className="text-white text-sm">
+          <p className="text-brutal-black font-bold text-sm uppercase">
             Claim your reward{claimableRewards.length > 1 ? "s" : ""} now!
           </p>
         </div>
@@ -55,40 +55,41 @@ export function ClaimRewardsPopup() {
           {claimableRewards.map((reward) => (
             <div
               key={reward.day.toString()}
-              className="bg-white rounded-xl p-4 shadow-lg"
+              className="border-4 border-brutal-black bg-brutal-white p-4 shadow-brutal-sm transform -rotate-1"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span className="text-3xl">{getRankEmoji(reward.rank)}</span>
                   <div>
-                    <p className="font-bold text-neutral-900">
+                    <p className="font-black text-brutal-black uppercase text-sm">
                       {getRankText(reward.rank)}
                     </p>
-                    <p className="text-xs text-neutral-600">
+                    <p className="text-xs text-brutal-black font-bold">
                       Day {reward.day.toString()}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-2xl font-black text-brutal-black">
                     {reward.rewardFormatted}
                   </p>
-                  <p className="text-xs text-neutral-600">cUSD</p>
+                  <p className="text-xs text-brutal-black font-bold uppercase">cUSD</p>
                 </div>
               </div>
 
               <button
                 onClick={() => claimReward(reward.day)}
                 disabled={isClaiming || isClaimLoading}
-                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-lg font-bold text-base hover:from-green-600 hover:to-emerald-700 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                type="button"
+                className="w-full px-4 py-3 text-base btn-brutal-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0"
               >
-                {isClaiming || isClaimLoading ? "Claiming..." : "💰 Claim Now"}
+                {isClaiming || isClaimLoading ? "Claiming..." : "Claim Now"}
               </button>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-white text-xs mt-4 opacity-90">
+        <p className="text-center text-brutal-black font-black text-xs mt-4 uppercase">
           ⚡ Claim before they expire!
         </p>
       </div>

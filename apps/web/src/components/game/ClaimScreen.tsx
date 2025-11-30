@@ -101,66 +101,68 @@ export function ClaimScreen({
   ].filter(Boolean);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] relative flex items-center justify-center p-3 sm:p-4 overflow-hidden bg-gray-50">
-      {/* Animated background decorations */}
+    <div className="min-h-[calc(100vh-4rem)] relative flex items-center justify-center p-3 sm:p-4 overflow-hidden bg-brutal-cream pattern-dots">
+      {/* Neo-brutalist decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-gradient-to-br from-[#FFDA57] to-[#FFE57F] opacity-20 blur-3xl animate-float" />
-        <div className="absolute top-20 right-10 w-40 h-40 rounded-full bg-gradient-to-br from-[#00B17A] to-[#009962] opacity-20 blur-3xl animate-float-delayed" />
-        <div className="absolute bottom-20 left-1/4 w-36 h-36 rounded-full bg-gradient-to-br from-[#F47575] to-[#FF6B6B] opacity-20 blur-3xl animate-float" />
+        <div className="absolute top-10 left-5 w-28 h-28 bg-brutal-yellow border-4 border-brutal-black rotate-12 animate-wiggle" />
+        <div className="absolute top-32 right-8 w-36 h-36 bg-brutal-green border-4 border-brutal-black -rotate-6" />
+        <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-brutal-pink border-4 border-brutal-black rotate-45" />
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        <div className="glass-card rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl">
-          <h2 className="text-2xl sm:text-3xl font-black bg-clip-text bg-gradient-multi mb-4 sm:mb-6 text-center">
+        <div className="card-brutal bg-brutal-white p-5 sm:p-7">
+          <h2 className="text-3xl sm:text-4xl font-black text-brutal-black mb-5 sm:mb-6 text-center uppercase tracking-tight transform -rotate-1 inline-block w-full">
             💰 Claim Rewards
           </h2>
 
           {/* Claim Rules */}
-          <div className="glass border border-white/30 rounded-xl p-4 mb-6">
-            <h3 className="text-sm font-bold text-gray-800 mb-3 text-center">
+          <div className="border-4 border-brutal-black bg-brutal-cream p-4 mb-6 shadow-brutal-sm">
+            <h3 className="text-sm font-black text-brutal-black mb-4 text-center uppercase">
               📋 Claim Rules
             </h3>
-            <ul className="space-y-2 text-xs sm:text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="text-[#00B17A] font-bold">✓</span>
+            <ul className="space-y-3 text-xs sm:text-sm text-brutal-black font-bold">
+              <li className="flex items-start gap-2 border-l-4 border-brutal-green pl-3 py-1">
+                <span className="font-black">✓</span>
                 <span>You can claim rewards for the last 2 days</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#00B17A] font-bold">✓</span>
+              <li className="flex items-start gap-2 border-l-4 border-brutal-green pl-3 py-1">
+                <span className="font-black">✓</span>
                 <span>Rewards are only available after the day is finalized</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#00B17A] font-bold">✓</span>
+              <li className="flex items-start gap-2 border-l-4 border-brutal-green pl-3 py-1">
+                <span className="font-black">✓</span>
                 <span>Top 3 players each day win rewards</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#FFDA57] font-bold">⚠</span>
-                <span className="font-semibold">Claim before they expire!</span>
+              <li className="flex items-start gap-2 border-l-4 border-brutal-yellow pl-3 py-1">
+                <span className="font-black">⚠</span>
+                <span className="font-black">Claim before they expire!</span>
               </li>
             </ul>
           </div>
 
           {/* Claimable Rewards */}
           <div className="mb-6">
-            <h3 className="text-sm font-bold text-gray-800 mb-3 text-center">
+            <h3 className="text-sm font-black text-brutal-black mb-4 text-center uppercase">
               Available Rewards
             </h3>
 
             {!address ? (
-              <p className="text-gray-700 text-center py-8 text-sm">
-                Connect your wallet to check for rewards
-              </p>
+              <div className="border-4 border-brutal-black bg-brutal-cream p-6 text-center shadow-brutal-sm">
+                <p className="text-brutal-black font-black text-sm uppercase">
+                  Connect your wallet to check for rewards
+                </p>
+              </div>
             ) : claimableRewards.length === 0 ? (
-              <div className="glass border border-white/30 rounded-xl p-6 text-center">
-                <p className="text-gray-700 text-sm mb-2">
+              <div className="border-4 border-brutal-black bg-brutal-cream p-6 text-center shadow-brutal-sm">
+                <p className="text-brutal-black font-black text-sm mb-2 uppercase">
                   No claimable rewards available
                 </p>
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-brutal-black font-bold">
                   Win a top 3 spot to earn rewards!
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 sm:space-y-4">
                 {claimableRewards.map((claim) => {
                   if (!claim) return null;
                   const isClaiming = claimingDay === claim.day;
@@ -168,25 +170,25 @@ export function ClaimScreen({
                   return (
                     <div
                       key={claim.day.toString()}
-                      className="bg-gradient-to-r from-[#FFDA57] to-[#FFE57F] rounded-xl p-4 shadow-lg border-2 border-[#FFDA57]"
+                      className="border-4 border-brutal-black bg-brutal-yellow p-4 shadow-brutal-sm transform -rotate-1"
                     >
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <span className="text-3xl">{getRankEmoji(claim.rank)}</span>
                           <div>
-                            <p className="font-bold text-[#100F06]">
+                            <p className="font-black text-brutal-black uppercase text-sm">
                               {getRankText(claim.rank)}
                             </p>
-                            <p className="text-xs text-[#100F06]/70">
+                            <p className="text-xs text-brutal-black font-bold">
                               Day {claim.day.toString()}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-2xl font-bold text-[#00B17A]">
+                          <p className="text-2xl font-black text-brutal-black">
                             {claim.rewardFormatted}
                           </p>
-                          <p className="text-xs text-[#100F06]/70">cUSD</p>
+                          <p className="text-xs text-brutal-black font-bold uppercase">cUSD</p>
                         </div>
                       </div>
 
@@ -194,11 +196,11 @@ export function ClaimScreen({
                         type="button"
                         onClick={() => handleClaim(claim.day)}
                         disabled={isClaiming || isClaimLoading}
-                        className="w-full bg-gradient-to-r from-[#00B17A] to-[#009962] text-white px-4 py-3 rounded-lg font-bold text-base hover:from-[#009962] hover:to-[#00B17A] transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                        className="w-full px-4 py-3 text-base btn-brutal-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0"
                       >
                         {isClaiming || isClaimLoading
                           ? "Claiming..."
-                          : "💰 Claim Now"}
+                          : "Claim Now"}
                       </button>
                     </div>
                   );
@@ -208,21 +210,21 @@ export function ClaimScreen({
           </div>
 
           {/* Recent Claims History */}
-          <div className="glass border border-white/30 rounded-xl p-4 mb-6">
-            <h3 className="text-sm font-bold text-gray-800 mb-3 text-center">
+          <div className="border-4 border-brutal-black bg-brutal-cream p-4 mb-6 shadow-brutal-sm">
+            <h3 className="text-sm font-black text-brutal-black mb-4 text-center uppercase">
               Recent Days Status
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {yesterday !== undefined && (
-                <div className="flex items-center justify-between text-xs sm:text-sm">
-                  <span className="text-gray-700 font-medium">
+                <div className="flex items-center justify-between text-xs sm:text-sm border-l-4 border-brutal-black pl-3 py-1">
+                  <span className="text-brutal-black font-bold uppercase">
                     Day {yesterday.toString()} (Yesterday)
                   </span>
                   <span
-                    className={`font-bold ${
+                    className={`font-black uppercase ${
                       yesterdayClaim?.canClaim
-                        ? "text-[#00B17A]"
-                        : "text-gray-500"
+                        ? "text-brutal-green"
+                        : "text-brutal-black opacity-50"
                     }`}
                   >
                     {yesterdayClaim?.canClaim ? "✓ Claimable" : "No reward"}
@@ -230,15 +232,15 @@ export function ClaimScreen({
                 </div>
               )}
               {dayBeforeYesterday !== undefined && (
-                <div className="flex items-center justify-between text-xs sm:text-sm">
-                  <span className="text-gray-700 font-medium">
+                <div className="flex items-center justify-between text-xs sm:text-sm border-l-4 border-brutal-black pl-3 py-1">
+                  <span className="text-brutal-black font-bold uppercase">
                     Day {dayBeforeYesterday.toString()} (2 days ago)
                   </span>
                   <span
-                    className={`font-bold ${
+                    className={`font-black uppercase ${
                       dayBeforeClaim?.canClaim
-                        ? "text-[#00B17A]"
-                        : "text-gray-500"
+                        ? "text-brutal-green"
+                        : "text-brutal-black opacity-50"
                     }`}
                   >
                     {dayBeforeClaim?.canClaim ? "✓ Claimable" : "No reward"}
@@ -251,9 +253,9 @@ export function ClaimScreen({
           <button
             type="button"
             onClick={onGoToWelcome}
-            className="w-full bg-gradient-to-r from-[#7DCAF6] to-[#5AB5E8] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold text-base sm:text-lg hover:from-[#5AB5E8] hover:to-[#7DCAF6] transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg border-2 border-white/30"
+            className="w-full px-6 sm:px-8 py-4 sm:py-5 text-base sm:text-lg btn-brutal-info"
           >
-            ← Back to Home
+            Back to Home
           </button>
         </div>
       </div>

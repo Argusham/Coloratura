@@ -24,58 +24,57 @@ export function GameOverScreen({
   onGoToWelcome,
 }: GameOverScreenProps) {
   return (
-    <div className="min-h-[calc(100vh-4rem)] relative flex items-center justify-center p-3 sm:p-4 overflow-hidden bg-gray-50">
-      {/* Animated background decorations */}
+    <div className="min-h-[calc(100vh-4rem)] relative flex items-center justify-center p-3 sm:p-4 overflow-hidden bg-brutal-cream pattern-dots">
+      {/* Neo-brutalist decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-40 h-40 rounded-full bg-gradient-to-br from-[#FFB8F4] to-[#F47575] opacity-20 blur-3xl animate-float" />
-        <div className="absolute top-40 right-10 w-32 h-32 rounded-full bg-gradient-to-br from-[#7DCAF6] to-[#A5B3FF] opacity-20 blur-3xl animate-float-delayed" />
-        <div className="absolute bottom-20 left-1/4 w-36 h-36 rounded-full bg-gradient-to-br from-[#FFDA57] to-[#00B17A] opacity-20 blur-3xl animate-float" />
+        <div className="absolute top-20 left-10 w-40 h-40 bg-brutal-pink border-4 border-brutal-black rotate-12 animate-wiggle" />
+        <div className="absolute top-40 right-10 w-32 h-32 bg-brutal-blue border-4 border-brutal-black -rotate-6" />
+        <div className="absolute bottom-20 left-1/4 w-36 h-36 bg-brutal-yellow border-4 border-brutal-black rotate-45" />
       </div>
 
       <div className="w-full max-w-md relative z-10 my-auto">
-        {/* Main glass card */}
-        <div className="glass-card rounded-3xl sm:rounded-[2.5rem] p-8 sm:p-10 shadow-2xl">
+        {/* Main card */}
+        <div className="card-brutal bg-brutal-white p-7 sm:p-10">
           {/* Header */}
           <div className="text-center mb-8 relative">
-            <div className="text-7xl sm:text-8xl mb-4 animate-bounce-slow">
+            <div className="text-7xl sm:text-8xl mb-5 inline-block transform hover:rotate-12 transition-transform">
               {score > 1000 ? "🎉" : score > 500 ? "✨" : "🎮"}
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black bg-clip-text bg-gradient-to-r from-[#F47575] via-[#FFB8F4] to-[#A5B3FF] mb-3 animate-gradient">
+            <h2 className="text-4xl sm:text-5xl font-black text-brutal-black mb-4 uppercase tracking-tight transform -rotate-1 inline-block">
               Game Over!
             </h2>
-            <p className="text-gray-900 text-sm sm:text-base font-semibold opacity-70">
+            <p className="text-brutal-black text-sm sm:text-base font-black uppercase">
               {score > 1000 ? "Incredible performance!" : score > 500 ? "Great job!" : "Nice try!"}
             </p>
           </div>
 
           {/* Score Display */}
-          <div className="glass rounded-3xl p-6 sm:p-8 mb-6 border-2 border-white/40 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#7DCAF6] to-transparent rounded-full opacity-30 blur-2xl" />
+          <div className="border-4 border-brutal-black bg-brutal-yellow p-6 sm:p-8 mb-6 shadow-brutal-sm transform -rotate-1">
             <div className="relative">
-              <p className="text-gray-900 text-sm sm:text-base font-semibold opacity-70 mb-2 text-center">
+              <p className="text-brutal-black text-sm sm:text-base font-black mb-2 text-center uppercase">
                 Final Score
               </p>
-              <p className="text-5xl sm:text-6xl font-black bg-clip-text bg-gradient-to-r from-[#00B17A] to-[#7DCAF6] mb-4 text-center animate-pulse-glow">
+              <p className="text-6xl sm:text-7xl font-black text-brutal-black mb-4 text-center">
                 {score}
               </p>
               <div className="flex items-center justify-center gap-4">
-                <div className="glass rounded-xl px-4 py-2 border border-white/30">
-                  <p className="text-xs text-gray-900 opacity-50 font-semibold">Level</p>
-                  <p className="text-xl font-black text-[#A5B3FF]">{level}</p>
+                <div className="border-4 border-brutal-black bg-brutal-white px-5 py-3 shadow-brutal-sm">
+                  <p className="text-xs text-brutal-black font-black uppercase">Level</p>
+                  <p className="text-2xl font-black text-brutal-blue">{level}</p>
                 </div>
               </div>
 
               {/* Status Messages */}
               {isSubmittingScore || isSubmitScoreLoading ? (
-                <div className="mt-4 glass rounded-xl p-3 border border-white/30 text-center">
-                  <p className="text-sm text-[#7DCAF6] font-semibold flex items-center justify-center gap-2">
+                <div className="mt-4 border-4 border-brutal-black bg-brutal-blue p-3 text-center shadow-brutal-sm">
+                  <p className="text-sm text-brutal-black font-black flex items-center justify-center gap-2 uppercase">
                     <span className="animate-spin">⏳</span>
                     <span>Submitting score...</span>
                   </p>
                 </div>
               ) : isSubmitScoreSuccess ? (
-                <div className="mt-4 glass rounded-xl p-3 border border-white/30 text-center">
-                  <p className="text-sm text-[#00B17A] font-semibold flex items-center justify-center gap-2">
+                <div className="mt-4 border-4 border-brutal-black bg-brutal-green p-3 text-center shadow-brutal-sm">
+                  <p className="text-sm text-brutal-black font-black flex items-center justify-center gap-2 uppercase">
                     <span>✓</span>
                     <span>Score submitted!</span>
                   </p>
@@ -85,59 +84,29 @@ export function GameOverScreen({
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-3">
+          <div className="space-y-3 sm:space-y-4">
             <button
               onClick={onStartGame}
               disabled={isStartingGame || isStartGameLoading}
-              className="w-full relative overflow-hidden rounded-2xl font-black text-lg sm:text-xl py-4 sm:py-5 text-white shadow-2xl transform transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-              style={{
-                background: "linear-gradient(135deg, #00B17A 0%, #7DCAF6 100%)",
-              }}
+              className="w-full px-6 py-4 sm:py-5 text-base sm:text-lg btn-brutal-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0"
             >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                {isStartingGame || isStartGameLoading ? (
-                  <>
-                    <span className="animate-spin">⏳</span>
-                    <span>Starting...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>🔄</span>
-                    <span>Play Again</span>
-                  </>
-                )}
-              </span>
-              {!isStartingGame && !isStartGameLoading && (
-                <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-                </div>
-              )}
+              {isStartingGame || isStartGameLoading ? "Starting..." : "Play Again"}
             </button>
 
             <button
+              type="button"
               onClick={onShowLeaderboard}
-              className="w-full relative overflow-hidden rounded-2xl font-black text-lg sm:text-xl py-4 sm:py-5 text-white shadow-2xl transform transition-all duration-300 hover:scale-105 active:scale-95"
-              style={{
-                background: "linear-gradient(135deg, #FFDA57 0%, #F47575 100%)",
-              }}
+              className="w-full px-6 py-4 sm:py-5 text-base sm:text-lg btn-brutal-secondary"
             >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                <span>🏆</span>
-                <span>View Leaderboard</span>
-              </span>
-              <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-              </div>
+              View Leaderboard
             </button>
 
             <button
+              type="button"
               onClick={onGoToWelcome}
-              className="w-full relative overflow-hidden rounded-2xl font-black text-lg sm:text-xl py-4 text-gray-900 shadow-lg transform transition-all duration-300 hover:scale-105 active:scale-95 glass border-2 border-white/40"
+              className="w-full px-6 py-4 text-base sm:text-lg btn-brutal-info"
             >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                <span>←</span>
-                <span>Main Menu</span>
-              </span>
+              Main Menu
             </button>
           </div>
         </div>

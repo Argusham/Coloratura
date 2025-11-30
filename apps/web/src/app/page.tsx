@@ -1,71 +1,67 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <main className="flex-1 bg-gray-50 min-h-[calc(100vh-4rem)] overflow-y-auto">
+    <main className="flex-1 bg-brutal-cream min-h-[calc(100vh-4rem)] overflow-y-auto pattern-dots">
       <div className="min-h-[calc(100vh-4rem)] relative flex items-center justify-center p-3 sm:p-4 overflow-hidden">
-        {/* Animated background decorations */}
+        {/* Neo-brutalist decorative elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-gradient-to-br from-[#F47575] to-[#FF6B6B] opacity-20 blur-sm animate-float" />
-          <div className="absolute top-20 right-10 w-40 h-40 rounded-full bg-gradient-to-br from-[#00B17A] to-[#009962] opacity-20 blur-sm animate-float" />
-          <div className="absolute bottom-20 left-1/4 w-36 h-36 rounded-full bg-gradient-to-br from-[#7DCAF6] to-[#5AB5E8] opacity-20 blur-sm animate-float" />
-          <div className="absolute bottom-10 right-1/4 w-32 h-32 rounded-full bg-gradient-to-br from-[#FFDA57] to-[#FFE57F] opacity-20 blur-sm animate-float" />
+          <div className="absolute top-10 left-5 w-24 h-24 bg-brutal-pink border-4 border-brutal-black rotate-12 animate-wiggle" />
+          <div className="absolute top-32 right-8 w-32 h-32 bg-brutal-blue border-4 border-brutal-black -rotate-6" />
+          <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-brutal-yellow border-4 border-brutal-black rotate-45" />
+          <div className="absolute bottom-32 right-1/3 w-28 h-28 bg-brutal-green border-4 border-brutal-black -rotate-12 animate-bounce-slow" />
         </div>
 
         <div className="w-full max-w-md relative z-10">
           {/* Hero Card */}
-          <div className="glass-card rounded-3xl sm:rounded-[2.5rem] shadow-2xl p-4 sm:p-6 mb-3 sm:mb-4">
-            <div className="text-center mb-4 sm:mb-6">
-              <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">🎯</div>
-              <h1 className="text-3xl sm:text-4xl font-black bg-clip-text bg-gradient-multi mb-2">
+          <div className="card-brutal bg-brutal-white p-5 sm:p-7 mb-4 sm:mb-5">
+            <div className="text-center mb-5 sm:mb-7">
+              <div className="text-6xl sm:text-7xl mb-4 sm:mb-5 inline-block transform hover:rotate-12 transition-transform">🎯</div>
+              <h1 className="text-4xl sm:text-5xl font-black text-brutal-black mb-3 uppercase tracking-tight transform -rotate-1">
                 Color Match
               </h1>
-              <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium glass rounded-full border border-yellow-200">
-                <span className="text-gray-800 font-semibold">Built on Celo</span>
+              <div className="inline-block border-4 border-brutal-black bg-brutal-yellow px-4 py-2 shadow-brutal-sm transform rotate-1">
+                <span className="text-brutal-black font-black text-xs sm:text-sm uppercase">Built on Celo</span>
               </div>
             </div>
 
-            <p className="text-gray-800 text-center mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed font-medium">
-              Match falling circles by tapping the right color
-              zone before they hit the bottom.
+            <p className="text-brutal-black text-center mb-5 sm:mb-7 text-sm sm:text-base leading-relaxed font-bold">
+              Match falling circles by tapping the right color zone before they hit the bottom.
             </p>
 
-            <Button
-              asChild
-              className="w-full h-12 sm:h-14 text-base sm:text-lg font-bold bg-gradient-to-r from-[#00B17A] to-[#009962] hover:from-[#009962] hover:to-[#00B17A] rounded-2xl shadow-lg border-2 border-white/30 text-white transition-all hover:scale-105 active:scale-95"
+            <Link
+              href="/game"
+              className="block w-full text-center px-6 py-4 sm:py-5 text-base sm:text-lg btn-brutal-primary"
             >
-              <Link href="/game">Play Now</Link>
-            </Button>
+              Play Now
+            </Link>
           </div>
 
           {/* Reward Info Card */}
-          <div className="glass-card rounded-3xl sm:rounded-[2.5rem] shadow-2xl p-4 sm:p-6 mb-3 sm:mb-4 bg-gradient-to-br from-[#00B17A]/10 to-[#009962]/10 border-2 border-[#00B17A]/30">
-            <p className="text-[#00B17A] text-sm sm:text-base font-bold text-center">
-              Daily rewards require 3+ players! Invite your friends to compete and win together!
+          <div className="card-brutal bg-brutal-green p-4 sm:p-5 mb-4 sm:mb-5 transform -rotate-1">
+            <p className="text-brutal-black text-sm sm:text-base font-black text-center uppercase tracking-tight">
+              Daily rewards require 3+ players! Invite friends to compete!
             </p>
           </div>
 
           {/* Game Info Card */}
-          <div className="glass-card rounded-3xl sm:rounded-[2.5rem] shadow-2xl p-4 sm:p-6 mb-3 sm:mb-4">
-            <h2 className="text-lg sm:text-xl font-black text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
-              <span>💡</span> How to Play
+          <div className="card-brutal bg-brutal-white p-4 sm:p-5 mb-3 sm:mb-4 transform rotate-1">
+            <h2 className="text-lg sm:text-xl font-black text-brutal-black mb-4 sm:mb-5 flex items-center gap-2 uppercase">
+              <span className="text-2xl">💡</span> How to Play
             </h2>
-            <ul className="space-y-2 sm:space-y-3 text-gray-700 text-sm sm:text-base font-medium">
-              <li className="flex items-start gap-2 sm:gap-3">
-                <span className="text-base sm:text-lg flex-shrink-0">1️⃣</span>
-                <span> Tap the matching color zone before they reach the bottom</span>
+            <ul className="space-y-3 sm:space-y-4 text-brutal-black text-sm sm:text-base font-bold">
+              <li className="flex items-start gap-3 border-l-4 border-brutal-pink pl-3 py-1">
+                <span className="text-base sm:text-lg flex-shrink-0 font-black">1</span>
+                <span>Tap the matching color zone before they reach the bottom</span>
               </li>
-              <li className="flex items-start gap-2 sm:gap-3">
-                <span className="text-base sm:text-lg flex-shrink-0">2️⃣</span>
-                <span>
-                 Level up every 100 points - speed increases!
-                </span>
+              <li className="flex items-start gap-3 border-l-4 border-brutal-blue pl-3 py-1">
+                <span className="text-base sm:text-lg flex-shrink-0 font-black">2</span>
+                <span>Level up every 100 points - speed increases!</span>
               </li>
-              <li className="flex items-start gap-2 sm:gap-3">
-                <span className="text-base sm:text-lg flex-shrink-0">3️⃣</span>
+              <li className="flex items-start gap-3 border-l-4 border-brutal-yellow pl-3 py-1">
+                <span className="text-base sm:text-lg flex-shrink-0 font-black">3</span>
                 <span>Miss a circle or tap wrong = Game Over</span>
               </li>
             </ul>
