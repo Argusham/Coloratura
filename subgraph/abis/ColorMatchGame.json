@@ -1,0 +1,659 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      { "name": "_paymentToken", "type": "address", "internalType": "address" }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  { "name": "AlreadyClaimed", "type": "error", "inputs": [] },
+  { "name": "AlreadySubmitted", "type": "error", "inputs": [] },
+  { "name": "CantCleanupCurrentDay", "type": "error", "inputs": [] },
+  { "name": "ClaimWindowExpired", "type": "error", "inputs": [] },
+  { "name": "ClaimWindowNotExpired", "type": "error", "inputs": [] },
+  { "name": "DayNotFinalized", "type": "error", "inputs": [] },
+  { "name": "DayNotFinished", "type": "error", "inputs": [] },
+  { "name": "DayNotOver", "type": "error", "inputs": [] },
+  { "name": "ExceedsReserve", "type": "error", "inputs": [] },
+  { "name": "InsufficientPool", "type": "error", "inputs": [] },
+  { "name": "InvalidRange", "type": "error", "inputs": [] },
+  { "name": "InvalidScore", "type": "error", "inputs": [] },
+  { "name": "InvalidSession", "type": "error", "inputs": [] },
+  { "name": "InvalidTokenAddress", "type": "error", "inputs": [] },
+  { "name": "MaxTenDaysPerCall", "type": "error", "inputs": [] },
+  { "name": "NotEnoughPlayers", "type": "error", "inputs": [] },
+  { "name": "NotInTop3", "type": "error", "inputs": [] },
+  { "name": "NotYourSession", "type": "error", "inputs": [] },
+  { "name": "OnlyOwner", "type": "error", "inputs": [] },
+  { "name": "SessionExpired", "type": "error", "inputs": [] },
+  { "name": "TransferFailed", "type": "error", "inputs": [] },
+  { "name": "UseWithdrawReserve", "type": "error", "inputs": [] },
+  { "name": "WrongFee", "type": "error", "inputs": [] },
+  {
+    "name": "DailyRewardPaid",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "rank",
+        "type": "uint8",
+        "indexed": false,
+        "internalType": "uint8"
+      },
+      {
+        "name": "reward",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "day",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "DayFinalized",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "day",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalCollected",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalPlayers",
+        "type": "uint16",
+        "indexed": false,
+        "internalType": "uint16"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "ExpiredFundsReclaimed",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "day",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "GameCompleted",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "sessionId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "score",
+        "type": "uint32",
+        "indexed": false,
+        "internalType": "uint32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "GameStarted",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "sessionId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "day",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "HighScoreSet",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "score",
+        "type": "uint32",
+        "indexed": false,
+        "internalType": "uint32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "ReserveUpdated",
+    "type": "event",
+    "inputs": [
+      {
+        "name": "newReserve",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "name": "CLAIM_WINDOW_DAYS",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "ENTRY_FEE",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "FIRST_PLACE_PERCENTAGE",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "LEADERBOARD_RETENTION_DAYS",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "MAX_SESSION_AGE",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "MIN_PLAYERS_FOR_REWARDS",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "SECOND_PLACE_PERCENTAGE",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "THIRD_PLACE_PERCENTAGE",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "addToPrizePool",
+    "type": "function",
+    "inputs": [
+      { "name": "amount", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "calculateReward",
+    "type": "function",
+    "inputs": [
+      { "name": "day", "type": "uint256", "internalType": "uint256" },
+      { "name": "rank", "type": "uint8", "internalType": "uint8" }
+    ],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "canClaimReward",
+    "type": "function",
+    "inputs": [
+      { "name": "player", "type": "address", "internalType": "address" },
+      { "name": "day", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [
+      { "name": "canClaim", "type": "bool", "internalType": "bool" },
+      { "name": "reward", "type": "uint256", "internalType": "uint256" },
+      { "name": "rank", "type": "uint8", "internalType": "uint8" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "canReclaimExpiredRewards",
+    "type": "function",
+    "inputs": [{ "name": "day", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [
+      { "name": "canReclaim", "type": "bool", "internalType": "bool" },
+      {
+        "name": "unclaimedAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "claimDailyReward",
+    "type": "function",
+    "inputs": [{ "name": "day", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "claimMultipleDays",
+    "type": "function",
+    "inputs": [
+      { "name": "dayIds", "type": "uint256[]", "internalType": "uint256[]" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "cleanupOldDays",
+    "type": "function",
+    "inputs": [
+      { "name": "startDay", "type": "uint256", "internalType": "uint256" },
+      { "name": "endDay", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "currentDay",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "dailyBestScores",
+    "type": "function",
+    "inputs": [
+      { "name": "", "type": "uint256", "internalType": "uint256" },
+      { "name": "", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [{ "name": "", "type": "uint32", "internalType": "uint32" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "dailyPlayerParticipated",
+    "type": "function",
+    "inputs": [
+      { "name": "", "type": "uint256", "internalType": "uint256" },
+      { "name": "", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "dailyRewardsClaimed",
+    "type": "function",
+    "inputs": [
+      { "name": "", "type": "uint256", "internalType": "uint256" },
+      { "name": "", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "dailySummaries",
+    "type": "function",
+    "inputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [
+      {
+        "name": "first",
+        "type": "tuple",
+        "components": [
+          { "name": "player", "type": "address", "internalType": "address" },
+          { "name": "score", "type": "uint32", "internalType": "uint32" },
+          { "name": "sessionId", "type": "uint32", "internalType": "uint32" }
+        ],
+        "internalType": "struct ColorMatchGame.LeaderboardEntry"
+      },
+      {
+        "name": "second",
+        "type": "tuple",
+        "components": [
+          { "name": "player", "type": "address", "internalType": "address" },
+          { "name": "score", "type": "uint32", "internalType": "uint32" },
+          { "name": "sessionId", "type": "uint32", "internalType": "uint32" }
+        ],
+        "internalType": "struct ColorMatchGame.LeaderboardEntry"
+      },
+      {
+        "name": "third",
+        "type": "tuple",
+        "components": [
+          { "name": "player", "type": "address", "internalType": "address" },
+          { "name": "score", "type": "uint32", "internalType": "uint32" },
+          { "name": "sessionId", "type": "uint32", "internalType": "uint32" }
+        ],
+        "internalType": "struct ColorMatchGame.LeaderboardEntry"
+      },
+      {
+        "name": "totalCollected",
+        "type": "uint128",
+        "internalType": "uint128"
+      },
+      { "name": "totalPlayers", "type": "uint16", "internalType": "uint16" },
+      { "name": "finalized", "type": "bool", "internalType": "bool" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "dailyWinners",
+    "type": "function",
+    "inputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [
+      { "name": "first", "type": "address", "internalType": "address" },
+      { "name": "second", "type": "address", "internalType": "address" },
+      { "name": "third", "type": "address", "internalType": "address" },
+      { "name": "dailyPool", "type": "uint128", "internalType": "uint128" },
+      { "name": "finalizedAt", "type": "uint64", "internalType": "uint64" },
+      { "name": "totalPlayers", "type": "uint16", "internalType": "uint16" },
+      { "name": "finalized", "type": "bool", "internalType": "bool" },
+      { "name": "expiredFundsClaimed", "type": "bool", "internalType": "bool" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "emergencyWithdrawToken",
+    "type": "function",
+    "inputs": [
+      { "name": "token", "type": "address", "internalType": "address" },
+      { "name": "amount", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "finalizeCurrentDay",
+    "type": "function",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "gameSessions",
+    "type": "function",
+    "inputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [
+      { "name": "player", "type": "address", "internalType": "address" },
+      { "name": "timestamp", "type": "uint64", "internalType": "uint64" },
+      { "name": "score", "type": "uint32", "internalType": "uint32" },
+      { "name": "level", "type": "uint16", "internalType": "uint16" },
+      { "name": "completed", "type": "bool", "internalType": "bool" },
+      { "name": "rewarded", "type": "bool", "internalType": "bool" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getContractBalance",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getCurrentDay",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getCurrentTop3",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "topPlayers",
+        "type": "address[3]",
+        "internalType": "address[3]"
+      },
+      { "name": "topScores", "type": "uint32[3]", "internalType": "uint32[3]" },
+      {
+        "name": "potentialRewards",
+        "type": "uint256[3]",
+        "internalType": "uint256[3]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getDailySummary",
+    "type": "function",
+    "inputs": [{ "name": "day", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [
+      { "name": "totalPlayers", "type": "uint16", "internalType": "uint16" },
+      {
+        "name": "totalCollected",
+        "type": "uint128",
+        "internalType": "uint128"
+      },
+      { "name": "finalized", "type": "bool", "internalType": "bool" },
+      { "name": "rewardsAvailable", "type": "bool", "internalType": "bool" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getDailyTop3",
+    "type": "function",
+    "inputs": [{ "name": "day", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [
+      {
+        "name": "topPlayers",
+        "type": "address[3]",
+        "internalType": "address[3]"
+      },
+      { "name": "topScores", "type": "uint32[3]", "internalType": "uint32[3]" },
+      { "name": "rewards", "type": "uint256[3]", "internalType": "uint256[3]" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getDailyWinners",
+    "type": "function",
+    "inputs": [{ "name": "day", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [
+      { "name": "first", "type": "address", "internalType": "address" },
+      { "name": "second", "type": "address", "internalType": "address" },
+      { "name": "third", "type": "address", "internalType": "address" },
+      { "name": "dailyPool", "type": "uint128", "internalType": "uint128" },
+      { "name": "finalizedAt", "type": "uint64", "internalType": "uint64" },
+      { "name": "totalPlayers", "type": "uint16", "internalType": "uint16" },
+      { "name": "finalized", "type": "bool", "internalType": "bool" },
+      { "name": "expiredFundsClaimed", "type": "bool", "internalType": "bool" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getHouseReserve",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getPaymentToken",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getPlayerStats",
+    "type": "function",
+    "inputs": [
+      { "name": "playerAddr", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [
+      { "name": "gamesPlayed", "type": "uint64", "internalType": "uint64" },
+      { "name": "lastPlayTime", "type": "uint64", "internalType": "uint64" },
+      { "name": "highScore", "type": "uint64", "internalType": "uint64" },
+      { "name": "totalEarnings", "type": "uint128", "internalType": "uint128" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getSessionScore",
+    "type": "function",
+    "inputs": [
+      { "name": "sessionId", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [
+      { "name": "player", "type": "address", "internalType": "address" },
+      { "name": "score", "type": "uint32", "internalType": "uint32" },
+      { "name": "level", "type": "uint16", "internalType": "uint16" },
+      { "name": "completed", "type": "bool", "internalType": "bool" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "houseReserve",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "oldestTrackedDay",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "owner",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "paymentToken",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      { "name": "", "type": "address", "internalType": "contract IERC20" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "players",
+    "type": "function",
+    "inputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "outputs": [
+      { "name": "gamesPlayed", "type": "uint64", "internalType": "uint64" },
+      { "name": "lastPlayTime", "type": "uint64", "internalType": "uint64" },
+      { "name": "highScore", "type": "uint64", "internalType": "uint64" },
+      { "name": "totalEarnings", "type": "uint128", "internalType": "uint128" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "reclaimExpiredRewards",
+    "type": "function",
+    "inputs": [{ "name": "day", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "sessionCounter",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "startGame",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "submitScore",
+    "type": "function",
+    "inputs": [
+      { "name": "sessionId", "type": "uint256", "internalType": "uint256" },
+      { "name": "score", "type": "uint32", "internalType": "uint32" },
+      { "name": "level", "type": "uint16", "internalType": "uint16" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "totalPrizePool",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "name": "withdrawReserve",
+    "type": "function",
+    "inputs": [
+      { "name": "amount", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  }
+]

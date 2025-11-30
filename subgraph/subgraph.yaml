@@ -1,0 +1,44 @@
+specVersion: 1.3.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: ColorMatchGame
+    network: celo
+    source:
+      address: "0x266e31b4097B60D9e4b95CB899354060D5B58090"
+      abi: ColorMatchGame
+      startBlock: 51943807
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - DailyRewardPaid
+        - DayFinalized
+        - ExpiredFundsReclaimed
+        - GameCompleted
+        - GameStarted
+        - HighScoreSet
+        - ReserveUpdated
+      abis:
+        - name: ColorMatchGame
+          file: ./abis/ColorMatchGame.json
+      eventHandlers:
+        - event: DailyRewardPaid(indexed address,uint8,uint256,uint256)
+          handler: handleDailyRewardPaid
+        - event: DayFinalized(uint256,uint256,uint16)
+          handler: handleDayFinalized
+        - event: ExpiredFundsReclaimed(uint256,uint256)
+          handler: handleExpiredFundsReclaimed
+        - event: GameCompleted(indexed address,uint256,uint32)
+          handler: handleGameCompleted
+        - event: GameStarted(indexed address,uint256,uint256)
+          handler: handleGameStarted
+        - event: HighScoreSet(indexed address,uint32)
+          handler: handleHighScoreSet
+        - event: ReserveUpdated(uint256)
+          handler: handleReserveUpdated
+      file: ./src/color-match-game.ts

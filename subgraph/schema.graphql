@@ -1,0 +1,66 @@
+type DailyRewardPaid @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes! # address
+  rank: Int! # uint8
+  reward: BigInt! # uint256
+  day: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type DayFinalized @entity(immutable: true) {
+  id: Bytes!
+  day: BigInt! # uint256
+  totalCollected: BigInt! # uint256
+  totalPlayers: Int! # uint16
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ExpiredFundsReclaimed @entity(immutable: true) {
+  id: Bytes!
+  day: BigInt! # uint256
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GameCompleted @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes! # address
+  sessionId: BigInt! # uint256
+  score: BigInt! # uint32
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GameStarted @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes! # address
+  sessionId: BigInt! # uint256
+  day: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type HighScoreSet @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes! # address
+  score: BigInt! # uint32
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ReserveUpdated @entity(immutable: true) {
+  id: Bytes!
+  newReserve: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

@@ -236,6 +236,9 @@ export function useGameContract() {
       return;
     }
 
+    // Reset session and submission state before starting a new game
+    setSessionId(null);
+    setIsSubmittingScore(false);
     setIsStartingGame(true);
     try {
       const entryFeeBigInt = BigInt(ENTRY_FEE);

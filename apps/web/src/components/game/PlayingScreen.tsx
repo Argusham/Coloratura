@@ -84,13 +84,13 @@ export function PlayingScreen({
               <button
                 key={color}
                 onClick={() => onZoneClick(color)}
-                className="relative h-20 sm:h-24 rounded-2xl sm:rounded-3xl font-black text-gray-900 text-base sm:text-lg shadow-2xl transition-all duration-200 hover:scale-105 active:scale-95 border-2 border-white/30 overflow-hidden group"
+                className="relative h-20 sm:h-24 rounded-2xl sm:rounded-3xl font-black text-gray-900 text-base sm:text-lg border-2 border-white/30 overflow-hidden group"
                 style={{ background: colorGradients[color] }}
               >
                 <span className="relative z-10 drop-shadow-lg">
                   {color.charAt(0).toUpperCase() + color.slice(1)}
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
+                <div className="absolute inset-0" />
               </button>
             ))}
           </div>
