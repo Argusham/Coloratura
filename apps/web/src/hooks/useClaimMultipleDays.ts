@@ -10,6 +10,7 @@ import {
 } from "wagmi";
 import { formatEther } from "viem";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/config/contract.config";
+import { useDivviReferral } from "@/hooks/useDivviReferral";
 
 interface ClaimableDay {
   day: bigint;
@@ -21,6 +22,7 @@ interface ClaimableDay {
 export function useClaimMultipleDays() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
+  const { enabled: divviEnabled, addReferralToTxData, submitReferral } = useDivviReferral();
   const [claimableDays, setClaimableDays] = useState<ClaimableDay[]>([]);
   const [isChecking, setIsChecking] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
@@ -117,11 +119,16 @@ export function useClaimMultipleDays() {
   // Reset claiming state when transaction completes
   useEffect(() => {
     if (isClaimSuccess) {
+      // Submit Divvi referral for claim transaction
+      if (divviEnabled && claimHash) {
+        submitReferral(claimHash);
+      }
+
       setIsClaiming(false);
       // Clear all claimable days after successful batch claim
       setClaimableDays([]);
     }
-  }, [isClaimSuccess]);
+  }, [isClaimSuccess, divviEnabled, claimHash, submitReferral]);
 
   const claimAllDays = async () => {
     if (!isConnected) {
@@ -138,12 +145,16 @@ export function useClaimMultipleDays() {
     try {
       const dayIds = claimableDays.map((day) => day.day);
 
+      // Get referral tag for Divvi
+      const referralTag = divviEnabled ? addReferralToTxData(undefined) : '0x';
+
       claimWrite({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "claimMultipleDays",
         args: [dayIds],
         chainId,
+        dataSuffix: referralTag,
       });
     } catch (error) {
       console.error("Error claiming rewards:", error);

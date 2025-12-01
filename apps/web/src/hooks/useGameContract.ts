@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   useAccount,
   useWriteContract,
@@ -20,11 +20,13 @@ import {
   CUSD_ADDRESS_TESTNET
 } from "@/config/contract.config";
 import type { LeaderboardEntry } from "@/types/game.types";
+import { useDivviReferral } from "@/hooks/useDivviReferral";
 
 export function useGameContract() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const publicClient = usePublicClient({ chainId });
+  const { enabled: divviEnabled, addReferralToTxData, submitReferral } = useDivviReferral();
 
   const [sessionId, setSessionId] = useState<bigint | null>(null);
   const [gameInstanceId, setGameInstanceId] = useState<string | null>(null);
@@ -34,6 +36,16 @@ export function useGameContract() {
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [lastCheckedDay, setLastCheckedDay] = useState<bigint | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+
+  // Use refs to always have current session values in callbacks
+  const sessionIdRef = useRef<bigint | null>(null);
+  const gameInstanceIdRef = useRef<string | null>(null);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    sessionIdRef.current = sessionId;
+    gameInstanceIdRef.current = gameInstanceId;
+  }, [sessionId, gameInstanceId]);
 
   // Determine which cUSD address to use based on chain
   const cusdAddress = chainId === celoAlfajores.id ? CUSD_ADDRESS_TESTNET : CUSD_ADDRESS_MAINNET;
@@ -129,6 +141,15 @@ export function useGameContract() {
     chainId,
   });
 
+  // Check cUSD balance
+  const { data: cusdBalance } = useReadContract({
+    address: cusdAddress,
+    abi: ERC20_ABI,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+    chainId,
+  });
+
   // Update leaderboard when data changes - use first non-empty data set
   useEffect(() => {
     // Try to find the first non-empty leaderboard data
@@ -161,14 +182,24 @@ export function useGameContract() {
   useEffect(() => {
     if (isApproveSuccess && isStartingGame) {
       console.log("Approval successful, now starting game...");
+
+      // Submit Divvi referral for approval transaction
+      if (divviEnabled && approveHash) {
+        submitReferral(approveHash);
+      }
+
+      // Get referral tag for Divvi
+      const referralTag = divviEnabled ? addReferralToTxData(undefined) : '0x';
+
       startGameWrite({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "startGame",
         chainId,
+        dataSuffix: referralTag,
       });
     }
-  }, [isApproveSuccess, isStartingGame, startGameWrite, chainId]);
+  }, [isApproveSuccess, isStartingGame, startGameWrite, chainId, divviEnabled, approveHash, submitReferral, addReferralToTxData]);
 
   // Handle start game transaction success
   useEffect(() => {
@@ -220,10 +251,16 @@ export function useGameContract() {
           console.log("[SESSION] ✅ Created new game instance:", newGameInstanceId);
           console.log("[SESSION] ✅ Session bound to address:", address);
 
+          // Submit Divvi referral for startGame transaction
+          if (divviEnabled && startGameHash) {
+            submitReferral(startGameHash);
+          }
+
           setSessionId(extractedSessionId);
           setGameInstanceId(newGameInstanceId);
           setSubmitRetryCount(0);
           setIsStartingGame(false);
+          console.log("[SESSION] ✅ Session ready - game can now start");
         } else {
           console.error("[SESSION] ❌ Failed to extract session ID");
           setIsStartingGame(false);
@@ -237,12 +274,18 @@ export function useGameContract() {
     };
 
     extractSessionId();
-  }, [isStartGameSuccess, startGameReceipt, publicClient, address]);
+  }, [isStartGameSuccess, startGameReceipt, publicClient, address, divviEnabled, startGameHash, submitReferral]);
 
   // Handle submit score transaction success
   useEffect(() => {
-    if (isSubmitScoreSuccess) {
+    if (isSubmitScoreSuccess && isSubmittingScore) {
       console.log("[SCORE_SUBMIT] ✅ Score submitted successfully!");
+
+      // Submit Divvi referral for submitScore transaction
+      if (divviEnabled && submitScoreHash) {
+        submitReferral(submitScoreHash);
+      }
+
       setIsSubmittingScore(false);
 
       // Invalidate the session after successful submission to prevent reuse
@@ -255,7 +298,7 @@ export function useGameContract() {
       refetchLeaderboard();
       refetchPlayerStats();
     }
-  }, [isSubmitScoreSuccess, refetchLeaderboard, refetchPlayerStats]);
+  }, [isSubmitScoreSuccess, isSubmittingScore, refetchLeaderboard, refetchPlayerStats, divviEnabled, submitScoreHash, submitReferral]);
 
   // Handle finalize transaction success
   useEffect(() => {
@@ -302,12 +345,16 @@ export function useGameContract() {
 
           setIsFinalizing(true);
 
+          // Get referral tag for Divvi
+          const referralTag = divviEnabled ? addReferralToTxData(undefined) : '0x';
+
           // Call finalizeCurrentDay on the contract
           finalizeWrite({
             address: CONTRACT_ADDRESS,
             abi: CONTRACT_ABI,
             functionName: "finalizeCurrentDay",
             chainId,
+            dataSuffix: referralTag,
           });
 
           console.log("[FINALIZE] ✅ Finalization transaction submitted!");
@@ -336,6 +383,35 @@ export function useGameContract() {
 
     console.log("[GAME_START] 🎮 Starting new game session...");
 
+    // CRITICAL: Check if user has enough cUSD balance BEFORE starting
+    const entryFeeBigInt = BigInt(ENTRY_FEE);
+    const currentBalance = cusdBalance as bigint | undefined;
+
+    if (!currentBalance || currentBalance < entryFeeBigInt) {
+      const balanceInCUSD = currentBalance
+        ? (Number(currentBalance) / 1e18).toFixed(4)
+        : "0.0000";
+      const requiredInCUSD = (Number(entryFeeBigInt) / 1e18).toFixed(4);
+
+      console.error("[GAME_START] ❌ Insufficient cUSD balance", {
+        balance: balanceInCUSD,
+        required: requiredInCUSD
+      });
+
+      alert(
+        `Insufficient cUSD balance!\n\n` +
+        `Your balance: ${balanceInCUSD} cUSD\n` +
+        `Required: ${requiredInCUSD} cUSD\n\n` +
+        `Please add cUSD to your wallet to play.`
+      );
+      return;
+    }
+
+    console.log("[GAME_START] ✅ Balance check passed:", {
+      balance: (Number(currentBalance) / 1e18).toFixed(4),
+      required: (Number(entryFeeBigInt) / 1e18).toFixed(4)
+    });
+
     // CRITICAL: Force invalidate any existing session before starting a new one
     console.log("[GAME_START] Invalidating previous session...");
     setSessionId(null);
@@ -345,8 +421,10 @@ export function useGameContract() {
     setIsStartingGame(true);
 
     try {
-      const entryFeeBigInt = BigInt(ENTRY_FEE);
       const currentAllowance = allowance as bigint | undefined;
+
+      // Get referral tag for Divvi
+      const referralTag = divviEnabled ? addReferralToTxData(undefined) : '0x';
 
       // Check if approval is needed
       if (!currentAllowance || currentAllowance < entryFeeBigInt) {
@@ -357,6 +435,7 @@ export function useGameContract() {
           functionName: "approve",
           args: [CONTRACT_ADDRESS, entryFeeBigInt],
           chainId,
+          dataSuffix: referralTag,
         });
       } else {
         // Already approved, start game directly
@@ -366,6 +445,7 @@ export function useGameContract() {
           abi: CONTRACT_ABI,
           functionName: "startGame",
           chainId,
+          dataSuffix: referralTag,
         });
       }
     } catch (error) {
@@ -378,33 +458,32 @@ export function useGameContract() {
   const validateSessionBeforeSubmit = async (
     sessionIdToValidate: bigint
   ): Promise<{ valid: boolean; reason?: string }> => {
-    if (!publicClient || !address) {
-      return { valid: false, reason: "No public client or address available" };
-    }
-
     try {
       console.log("[SCORE_SUBMIT] Validating session before submission:", sessionIdToValidate.toString());
 
-      // Since getSessionScore and gameSessions aren't in the deployed contract ABI,
-      // we'll do a simpler validation by checking if the sessionId is reasonable
-      // and letting the contract handle the detailed validation
+      // Basic validation: Check if session ID is non-zero
+      if (sessionIdToValidate === 0n) {
+        return { valid: false, reason: "Invalid session ID (zero)" };
+      }
 
-      // Basic validation: Check if session ID is valid (non-zero and not too old)
-      const sessionCounter = await publicClient.readContract({
-        address: CONTRACT_ADDRESS,
-        abi: CONTRACT_ABI,
-        functionName: "sessionCounter",
-      }) as bigint;
+      // If we have publicClient, do additional validation
+      if (publicClient) {
+        const sessionCounter = await publicClient.readContract({
+          address: CONTRACT_ADDRESS,
+          abi: CONTRACT_ABI,
+          functionName: "sessionCounter",
+        }) as bigint;
 
-      console.log("[SCORE_SUBMIT] Session counter validation:", {
-        sessionId: sessionIdToValidate.toString(),
-        sessionCounter: sessionCounter.toString(),
-        valid: sessionIdToValidate > 0n && sessionIdToValidate <= sessionCounter
-      });
+        console.log("[SCORE_SUBMIT] Session counter validation:", {
+          sessionId: sessionIdToValidate.toString(),
+          sessionCounter: sessionCounter.toString(),
+          valid: sessionIdToValidate <= sessionCounter
+        });
 
-      // Check if session ID is within valid range
-      if (sessionIdToValidate === 0n || sessionIdToValidate > sessionCounter) {
-        return { valid: false, reason: "Invalid session ID" };
+        // Check if session ID is within valid range
+        if (sessionIdToValidate > sessionCounter) {
+          return { valid: false, reason: "Session ID exceeds counter" };
+        }
       }
 
       console.log("[SCORE_SUBMIT] ✅ Basic session validation passed!");
@@ -412,14 +491,27 @@ export function useGameContract() {
 
     } catch (error) {
       console.error("[SCORE_SUBMIT] ❌ Error validating session:", error);
-      return { valid: false, reason: `Validation error: ${error}` };
+      // Don't fail on validation errors - let the contract handle it
+      console.log("[SCORE_SUBMIT] Proceeding despite validation error - contract will validate");
+      return { valid: true };
     }
   };
 
   const submitScore = async (score: number, level: number, retryAttempt: number = 0) => {
-    if (!sessionId || !gameInstanceId) {
-      console.error("[SCORE_SUBMIT] ❌ No session ID or game instance ID available");
-      alert("Cannot submit score: No active game session");
+    // CRITICAL: Use refs to get current session values (not closure values)
+    const currentSessionId = sessionIdRef.current;
+    const currentGameInstanceId = gameInstanceIdRef.current;
+
+    if (!currentSessionId || !currentGameInstanceId) {
+      console.error("[SCORE_SUBMIT] ❌ No session ID or game instance ID available", {
+        sessionId: currentSessionId ? currentSessionId.toString() : "null",
+        gameInstanceId: currentGameInstanceId || "null"
+      });
+      alert(
+        "Cannot submit score: No active game session.\n\n" +
+        "This usually happens if the game started before the blockchain transaction completed.\n\n" +
+        "Please try starting a new game."
+      );
       return;
     }
 
@@ -428,15 +520,15 @@ export function useGameContract() {
     console.log(`[SCORE_SUBMIT] 📊 Submitting score - Attempt ${retryAttempt + 1}/${MAX_RETRY_ATTEMPTS + 1}`, {
       score,
       level,
-      sessionId: sessionId.toString(),
-      gameInstanceId
+      sessionId: currentSessionId.toString(),
+      gameInstanceId: currentGameInstanceId
     });
 
     setIsSubmittingScore(true);
 
     try {
       // PRE-SUBMISSION VALIDATION
-      const validation = await validateSessionBeforeSubmit(sessionId);
+      const validation = await validateSessionBeforeSubmit(currentSessionId);
 
       if (!validation.valid) {
         console.error("[SCORE_SUBMIT] ❌ Session validation failed:", validation.reason);
@@ -475,12 +567,16 @@ export function useGameContract() {
       // Session is valid, proceed with submission
       console.log("[SCORE_SUBMIT] ✅ Session validated, submitting to contract...");
 
+      // Get referral tag for Divvi
+      const referralTag = divviEnabled ? addReferralToTxData(undefined) : '0x';
+
       submitScoreWrite({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "submitScore",
-        args: [sessionId, score, level],
+        args: [currentSessionId, score, level],
         chainId,
+        dataSuffix: referralTag,
       });
 
     } catch (error) {

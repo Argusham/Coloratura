@@ -5,6 +5,9 @@ export const ENTRY_FEE = "100000000000000000"; // 0.1 cUSD (18 decimals)
 export const CUSD_ADDRESS_MAINNET = "0x765DE816845861e75A25fCA122bb6898B8B1282a" as const;
 export const CUSD_ADDRESS_TESTNET = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1" as const;
 
+// Divvi Referral Integration
+export const DIVVI_CONSUMER_ADDRESS = "0x7320f31D71A5294f04f7eEeb101418FEEd3d3119" as const;
+
 // ERC20 ABI for cUSD token interactions
 export const ERC20_ABI = [
   {

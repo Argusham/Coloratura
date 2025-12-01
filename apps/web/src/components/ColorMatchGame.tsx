@@ -18,13 +18,15 @@ import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/config/contract.config";
 export default function ColorMatchGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameLoopRef = useRef<number>();
+  const lastGameInstanceId = useRef<string | null>(null);
 
   const {
     address,
     isConnected,
     isStartingGame,
     isStartGameLoading,
-    isStartGameSuccess,
+    sessionId,
+    gameInstanceId,
     isSubmittingScore,
     isSubmitScoreLoading,
     isSubmitScoreSuccess,
@@ -97,12 +99,16 @@ export default function ColorMatchGame() {
     expectedColorRef.current = expectedColor;
   }, [expectedColor]);
 
-  // Start gameplay when contract transaction succeeds
+  // Start gameplay when session ID is available (only once per session)
   useEffect(() => {
-    if (isStartGameSuccess) {
+    if (sessionId && gameInstanceId && lastGameInstanceId.current !== gameInstanceId) {
+      console.log("[GAME] Session ID available, starting gameplay for instance:", gameInstanceId);
+      lastGameInstanceId.current = gameInstanceId;
       startGamePlay();
     }
-  }, [isStartGameSuccess]);
+    // startGamePlay is intentionally excluded from deps to avoid infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, gameInstanceId]);
 
   // Game loop effect - only depends on game state, not on circles/colors
   useEffect(() => {
