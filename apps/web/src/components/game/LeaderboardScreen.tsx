@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { DailyTop3Entry, ScoreEntry } from "@/hooks/useContractLeaderboard";
+import { LeaderboardEntrySkeleton } from "@/components/ui/SkeletonLoader";
 
 interface LeaderboardScreenProps {
   previousDayTop3: DailyTop3Entry[];
@@ -63,8 +64,10 @@ export function LeaderboardScreen({
           </div>
 
           {isLoading ? (
-            <div className="text-center py-8">
-              <p className="text-brutal-black font-black uppercase">Loading...</p>
+            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+              <LeaderboardEntrySkeleton />
+              <LeaderboardEntrySkeleton />
+              <LeaderboardEntrySkeleton />
             </div>
           ) : (
             <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 max-h-80 overflow-y-auto">

@@ -1,3 +1,5 @@
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+
 interface GameOverScreenProps {
   score: number;
   level: number;
@@ -67,8 +69,8 @@ export function GameOverScreen({
               {/* Status Messages */}
               {isSubmittingScore || isSubmitScoreLoading ? (
                 <div className="mt-4 border-4 border-brutal-black bg-brutal-blue p-3 text-center shadow-brutal-sm">
-                  <p className="text-sm text-brutal-black font-black flex items-center justify-center gap-2 uppercase">
-                    <span className="animate-spin">⏳</span>
+                  <p className="text-sm text-brutal-white font-black flex items-center justify-center gap-3 uppercase">
+                    <LoadingSpinner size="sm" className="border-t-brutal-white" />
                     <span>Submitting score...</span>
                   </p>
                 </div>
@@ -88,9 +90,16 @@ export function GameOverScreen({
             <button
               onClick={onStartGame}
               disabled={isStartingGame || isStartGameLoading}
-              className="w-full px-6 py-4 sm:py-5 text-base sm:text-lg btn-brutal-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+              className="w-full px-6 py-4 sm:py-5 text-base sm:text-lg btn-brutal-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 flex items-center justify-center gap-3"
             >
-              {isStartingGame || isStartGameLoading ? "Starting..." : "Play Again"}
+              {isStartingGame || isStartGameLoading ? (
+                <>
+                  <LoadingSpinner size="sm" className="border-t-brutal-white" />
+                  <span>Starting...</span>
+                </>
+              ) : (
+                "Play Again"
+              )}
             </button>
 
             <button

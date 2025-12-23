@@ -1,5 +1,7 @@
 import { ENTRY_FEE } from "@/config/contract.config";
 import type { PlayerStats as PlayerStatsData } from "@/hooks/useContractLeaderboard";
+import { PlayerStatsSkeleton } from "@/components/ui/SkeletonLoader";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface WelcomeScreenProps {
   isConnected: boolean;
@@ -61,38 +63,49 @@ export function WelcomeScreen({
               type="button"
               onClick={onStartGame}
               disabled={!isConnected || isStartingGame || isStartGameLoading}
-              className="w-full px-6 sm:px-8 py-4 sm:py-5 text-base sm:text-lg btn-brutal-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+              className="w-full px-6 sm:px-8 py-4 sm:py-5 text-base sm:text-lg btn-brutal-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 flex items-center justify-center gap-3"
             >
-              {isStartingGame || isStartGameLoading ? "Starting..." : "Start Game"}
+              {isStartingGame || isStartGameLoading ? (
+                <>
+                  <LoadingSpinner size="sm" className="border-t-brutal-white" />
+                  <span>Starting Game...</span>
+                </>
+              ) : (
+                "Start Game"
+              )}
             </button>
 
             {/* Player Stats Display */}
-            {isConnected && playerStatsData && (
-              <div className="card-brutal bg-brutal-cream p-4 space-y-2">
-                <h3 className="text-sm font-black text-brutal-black text-center mb-3 uppercase">
-                  Your Stats
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="text-center border-4 border-brutal-black bg-brutal-white p-3">
-                    <p className="text-xs text-brutal-black font-black uppercase">Games</p>
-                    <p className="text-2xl font-black text-brutal-black">
-                      {playerStatsData.gamesPlayed.toString()}
-                    </p>
-                  </div>
-                  <div className="text-center border-4 border-brutal-black bg-brutal-white p-3">
-                    <p className="text-xs text-brutal-black font-black uppercase">High Score</p>
-                    <p className="text-2xl font-black text-brutal-blue">
-                      {playerStatsData.highScore.toString()}
-                    </p>
-                  </div>
-                  <div className="text-center col-span-2 border-4 border-brutal-black bg-brutal-yellow p-3">
-                    <p className="text-xs text-brutal-black font-black uppercase">Total Earnings</p>
-                    <p className="text-2xl font-black text-brutal-black">
-                      {playerStatsData.totalEarningsFormatted} cUSD
-                    </p>
+            {isConnected && (
+              playerStatsData ? (
+                <div className="card-brutal bg-brutal-cream p-4 space-y-2">
+                  <h3 className="text-sm font-black text-brutal-black text-center mb-3 uppercase">
+                    Your Stats
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center border-4 border-brutal-black bg-brutal-white p-3">
+                      <p className="text-xs text-brutal-black font-black uppercase">Games</p>
+                      <p className="text-2xl font-black text-brutal-black">
+                        {playerStatsData.gamesPlayed.toString()}
+                      </p>
+                    </div>
+                    <div className="text-center border-4 border-brutal-black bg-brutal-white p-3">
+                      <p className="text-xs text-brutal-black font-black uppercase">High Score</p>
+                      <p className="text-2xl font-black text-brutal-blue">
+                        {playerStatsData.highScore.toString()}
+                      </p>
+                    </div>
+                    <div className="text-center col-span-2 border-4 border-brutal-black bg-brutal-yellow p-3">
+                      <p className="text-xs text-brutal-black font-black uppercase">Total Earnings</p>
+                      <p className="text-2xl font-black text-brutal-black">
+                        {playerStatsData.totalEarningsFormatted} cUSD
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <PlayerStatsSkeleton />
+              )
             )}
 
             <div className="grid grid-cols-2 gap-3">

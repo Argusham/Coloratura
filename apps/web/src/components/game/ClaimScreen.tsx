@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useCanClaimReward } from "@/hooks/useContractLeaderboard";
 import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/config/contract.config";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface ClaimScreenProps {
   address: string | undefined;
@@ -196,11 +197,16 @@ export function ClaimScreen({
                         type="button"
                         onClick={() => handleClaim(claim.day)}
                         disabled={isClaiming || isClaimLoading}
-                        className="w-full px-4 py-3 text-base btn-brutal-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+                        className="w-full px-4 py-3 text-base btn-brutal-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 flex items-center justify-center gap-3"
                       >
-                        {isClaiming || isClaimLoading
-                          ? "Claiming..."
-                          : "Claim Now"}
+                        {isClaiming || isClaimLoading ? (
+                          <>
+                            <LoadingSpinner size="sm" className="border-t-brutal-white" />
+                            <span>Claiming...</span>
+                          </>
+                        ) : (
+                          "Claim Now"
+                        )}
                       </button>
                     </div>
                   );
