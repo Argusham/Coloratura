@@ -68,6 +68,7 @@ jspm_packages/
 
 # Next.js build output
 .next
+out/
 
 # Nuxt.js build / generate output
 .nuxt
@@ -98,3 +99,13 @@ Thumbs.db
 
 # Turbo
 .turbo
+
+# Capacitor
+.capacitor/
+apps/web/android/app/build/
+apps/web/android/.gradle/
+apps/web/android/gradle/
+apps/web/ios/App/Pods/
+apps/web/ios/App/build/
+apps/web/ios/App/*.xcworkspace
+apps/web/ios/App/.build/

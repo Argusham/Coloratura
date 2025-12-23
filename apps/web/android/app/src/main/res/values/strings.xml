@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Colourtura</string>
+    <string name="title_activity_main">Colourtura</string>
+    <string name="package_name">com.colourtura.app</string>
+    <string name="custom_url_scheme">com.colourtura.app</string>
+</resources>
